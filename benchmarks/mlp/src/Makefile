@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS=-g -Wall
-LDFLAGS=-lconfig++
+CFLAGS=-g -Wall -std=c++11
+LDFLAGS=
 RM=rm -rf
 
 SRCS=$(wildcard *.cc)
@@ -11,7 +11,7 @@ EXEC=mlp
 default: $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS)
 
 %.o: %.cc $(HDRS)
 	$(CC) $(CFLAGS) -o $@ -c $<

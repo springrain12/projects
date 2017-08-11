@@ -14,7 +14,7 @@ if [ $option == "zip" ]; then
     fi
 elif [ $option == "unzip" ]; then
     if [ -f inputs.tar.bz2 ]; then
-        rm -rf inputs; tar xf inputs.tar.bz2; rm -f inputs.tar.bz2;
+        rm -rf inputs; tar xf inputs.tar.bz2
     else
         echo "Error: input.tar.bz2 does not exist!"; exit 1;
     fi
