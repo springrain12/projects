@@ -14,16 +14,21 @@ using namespace std;
 
 int main(int argc, char **argv) {
     // Check # of input arguments.
-    if(argc != 3) {
-        cout << "Usage: " << argv[0] << " -config <mlp config file>" << endl;
+    if(argc < 2) {
+        cout << "Usage: " << argv[0]                         << endl
+             << "       -config <required: mlp config file>" << endl
+             << "       -weight <optional: mlp weight file>" << endl;
         exit(1);
     }
 
     // Parse input arguments.
-    string config_file_name;
+    string config_file_name, weight_file_name;
     for(int i = 1; i < argc; i++) {
         if(!strcasecmp(argv[i],"-config")) {
             config_file_name = argv[++i];
+        }
+        else if(!strcasecmp(argv[i],"-weight")) {
+            weight_file_name = argv[++i];
         }
         else {
             cout << "Error: unknown option " << argv[i] << endl;
@@ -31,7 +36,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    mlp_t *mlp = new mlp_t(config_file_name);
+    mlp_t *mlp = new mlp_t(config_file_name, weight_file_name);
     mlp->initialize();
 
     delete mlp;
