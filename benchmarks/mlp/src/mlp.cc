@@ -354,15 +354,8 @@ void mlp_t::mlp_training() {
             for(unsigned j = 0; j < total_layer_index; j++) {
                 for(unsigned k = 0; k < num_neurons_per_layer[j+1]; k++) {
                     for(unsigned l = 0; l < num_neurons_per_layer[j]; l++) {
-                        weights[j][k * num_neurons_per_layer[j] + l] += momentum * delta[j][k * num_neurons_per_layer[j] + l];
-                    }   
-                }
-            }
-            for(unsigned j = 0; j < total_layer_index; j++) {
-                for(unsigned k = 0; k < num_neurons_per_layer[j+1]; k++) {
-                    for(unsigned l = 0; l < num_neurons_per_layer[j]; l++) {
                         delta[j][k * num_neurons_per_layer[j] + l] = learning_rate * theta[j][k] * neurons[j][l];
-                        weights[j][k * num_neurons_per_layer[j] + l] += delta[j][k * num_neurons_per_layer[j] + l];
+                        weights[j][k * num_neurons_per_layer[j] + l] += delta[j][k * num_neurons_per_layer[j] + l] + momentum * delta[j][k * num_neurons_per_layer[j] + l];
                     }
                 }
             }      
