@@ -32,17 +32,14 @@ public:
     void forward_propagation(float **);
     void mlp_training();
     void mlp_test();
-    void mlp_calculation_per_thread(unsigned);
+    void mlp_test_per_thread(unsigned);
     void mlp_train_per_thread(unsigned);
     void softmax(float **); 
     unsigned find_max(float **);
     float sigmoid(float x);
 private:
-    float **neurons;
     bool require_training;
     float **weights;
-    float **delta;
-    float **theta;
 
     std::string config_file_name;                        // Configuration file name
     std::string test_img_file_name;                      // Test img file for inferencing
@@ -55,7 +52,6 @@ private:
     unsigned num_layers;
     unsigned total_layer_index;
     unsigned num_threads;
-    unsigned per_thread_index;
     unsigned correct_count;
 
 	unsigned num_neurons_in_input_layer;
@@ -69,7 +65,6 @@ private:
     uint8_t *train_img_set;
     uint8_t *test_label_set;
     uint8_t *train_label_set;
-	float *answer_set;
 
     float learning_rate;
     float momentum;

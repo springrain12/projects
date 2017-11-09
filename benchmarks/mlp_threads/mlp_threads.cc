@@ -17,13 +17,11 @@ using namespace std;
 using namespace libconfig;
 
 mlp_t::mlp_t() :
-    neurons(NULL),
     require_training(false),
     test_img_set(NULL),
     train_img_set(NULL),
     test_label_set(NULL),
-	train_label_set(NULL),
-    answer_set(NULL) {
+	train_label_set(NULL) {
 }
 
 mlp_t::~mlp_t() {
@@ -32,31 +30,11 @@ mlp_t::~mlp_t() {
             delete [] weights[i];
         }
     }
-	if(delta) {
-		for(unsigned i = 0; i < total_layer_index; i++) {
-			delete [] delta[i];
-		}
-	}
-    if(theta) {
-        for(unsigned i = 0; i < total_layer_index; i ++) {
-            delete [] theta [i];
-        }
-    }
-    if(neurons) {
-        for(unsigned i = 0; i < num_layers; i++) {
-            delete [] neurons[i];
-        }
-    }
-    
     delete [] weights;
-    delete [] delta;
-    delete [] theta;
-    delete [] neurons;
     delete [] test_img_set;
     delete [] test_label_set;
     delete [] train_img_set;
     delete [] train_label_set;
-	delete [] answer_set;
     delete [] num_neurons_per_layer;
 }
 
@@ -120,30 +98,12 @@ void mlp_t::initialize(string m_config_file_name) {
         num_neurons_in_hidden_layer = num_neurons_per_layer[1];
         num_neurons_in_output_layer = num_neurons_per_layer[2]; 
 		
-        // Setting neurons
-		neurons = new float*[num_layers];
-        for(unsigned i = 0; i < num_layers; i++) {
-			neurons[i] = new float[num_neurons_per_layer[i]];
-        }
-       
         // Setting weights
         weights = new float*[total_layer_index];
         for(unsigned i = 0; i < total_layer_index; i++) {
             weights[i] = new float[num_neurons_per_layer[i] * num_neurons_per_layer[i+1]];
         }
         
-        // Setting delta
-        delta = new float*[total_layer_index];
-        for(unsigned i = 0; i < total_layer_index; i++) {
-            delta[i] = new float[num_neurons_per_layer[i] * num_neurons_per_layer[i+1]];
-        }
-
-        // Setting theta
-        theta = new float*[total_layer_index];
-        for(unsigned i = 0; i < total_layer_index; i++) {
-            theta[i] = new float[num_neurons_per_layer[i+1]];
-        }
-
         // Load the number of training and test set.
         test_set_size = unsigned(mlp_config.lookup("test_set_size"));
         train_set_size = unsigned(mlp_config.lookup("train_set_size"));
@@ -159,7 +119,6 @@ void mlp_t::initialize(string m_config_file_name) {
         // Setting train label and img set.
         train_label_set = new uint8_t[train_set_size];
         train_img_set = new uint8_t[train_set_size * num_neurons_in_input_layer];
-        answer_set = new float[num_neurons_in_output_layer];
 
         // Load number of threads
         num_threads = mlp_config.lookup("num_threads");
@@ -195,10 +154,8 @@ void mlp_t::init_weights() {
     for(unsigned i = 0; i < total_layer_index; i++){
         for(unsigned j = 0; j < num_neurons_per_layer[i] * num_neurons_per_layer[i+1]; j++) {
             weights[i][j] = distribution(generator);
-            delta[i][j] = 0.0;
         }
     }
-    cout << endl;
 }
 
 // Load weights from pre-trained weight file
@@ -351,7 +308,7 @@ void mlp_t::mlp_test() {
     // Spawn threads
     thread t[num_threads];
     for(unsigned i = 0; i < num_threads; i++) {
-        t[i] = thread(&mlp_t::mlp_calculation_per_thread, this, i);
+        t[i] = thread(&mlp_t::mlp_test_per_thread, this, i);
     }
     
     for(unsigned i = 0; i < num_threads; i++) {
@@ -361,7 +318,7 @@ void mlp_t::mlp_test() {
     cout << endl << "correct ratio is : " << correct_count << " / " << test_set_size << endl;
 }
 
-void mlp_t::mlp_calculation_per_thread(unsigned tid) {
+void mlp_t::mlp_test_per_thread(unsigned tid) {
     
     cout << "thread id: " << tid << endl;
   
@@ -520,5 +477,4 @@ unsigned mlp_t::find_max(float **neurons) {
 }
 
 float mlp_t::sigmoid(float x) {
-    return 1 / (1 + exp(-x));
-}
+    return 1 / (1 + exp(-x)); }
